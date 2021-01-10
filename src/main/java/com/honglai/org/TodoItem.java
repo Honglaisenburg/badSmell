@@ -2,7 +2,7 @@ package com.honglai.org;
 
 import java.util.Objects;
 
-public class TodoItem {
+public class TodoItem implements Persistable {
     private Integer id;
     private String name;
     private ItemStatus status;
@@ -40,5 +40,10 @@ public class TodoItem {
 
     public int sortOrder() {
         return status.ordinal();
+    }
+
+    @Override
+    public String getPersistString() {
+        return String.format("%s||%s||%s", this.id, this.status, this.name);
     }
 }

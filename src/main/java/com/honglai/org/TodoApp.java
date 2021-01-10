@@ -11,15 +11,18 @@ import java.util.stream.Collectors;
 public class TodoApp {
     private List<TodoItem> itemList;
     private final AtomicInteger idCounter;
+    private PersistManager persistManager;
 
     public TodoApp() {
         this.itemList = new ArrayList<>();
         this.idCounter = new AtomicInteger(1);
+        this.persistManager = new PersistManager();
     }
 
     public TodoItem addItem(String someItem) {
         TodoItem newItem = TodoItem.newItem(idCounter.getAndIncrement(), someItem);
         this.itemList.add(newItem);
+        persistManager.insert(newItem);
         return newItem;
     }
 
@@ -27,10 +30,13 @@ public class TodoApp {
         Optional<TodoItem> todoItem = this.itemList.stream()
             .filter(item -> Objects.equals(item.getId(), id))
             .findFirst();
-        todoItem.ifPresent(TodoItem::finish);
         if (!todoItem.isPresent()) {
             throw new ItemNotFoundException(id);
         }
+        todoItem.ifPresent(item -> {
+            item.finish();
+            persistManager.update(id, item);
+        });
     }
 
     public List<String> printAllItems() {
