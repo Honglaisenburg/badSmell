@@ -1,10 +1,8 @@
 package com.honglai.org;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class TodoItem {
-    private static AtomicInteger idCounter = new AtomicInteger(1);
     private Integer id;
     private String name;
     private ItemStatus status;
@@ -15,8 +13,8 @@ public class TodoItem {
         this.status = ItemStatus.PENDING;
     }
 
-    public static TodoItem newItem(String someItem) {
-        return new TodoItem(idCounter.getAndIncrement(), someItem);
+    public static TodoItem newItem(Integer id, String someItem) {
+        return new TodoItem(id, someItem);
     }
 
     public Integer getId() {
@@ -33,5 +31,14 @@ public class TodoItem {
 
     public boolean isDone() {
         return Objects.equals(this.status, ItemStatus.DONE);
+    }
+
+    public String print() {
+        String statusString = isDone() ? String.format("[%s] ", this.status.name()) : "";
+        return String.format("%s. %s<%s>", this.id, statusString, this.name);
+    }
+
+    public int sortOrder() {
+        return status.ordinal();
     }
 }
